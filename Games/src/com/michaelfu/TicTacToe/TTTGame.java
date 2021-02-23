@@ -9,8 +9,13 @@ public class TTTGame {
 	private static final int firstSpot = 1;
 	private static final int thirdSpot = 3;
 
-	
-	protected void start(TTTBoard TTT) {
+	/*
+	 * Plays TTT with another player
+	 * 
+	 * @param	TTT = the gameBoard
+	 * 
+	 */
+	protected void start2p(TTTBoard TTT) {
 		char p1 = chooseSymbol(X, O);
 		char p2 = ' ';
 		if(p1 == X) {
@@ -19,6 +24,7 @@ public class TTTGame {
 		else {
 			p2 = X;
 		}
+		
 		boolean gameDone = false;
 		while(gameDone == false) {
 			choiceOfPositioning(TTT, p1);
@@ -35,17 +41,103 @@ public class TTTGame {
 		TTT.printGameBoard(TTT.board);
 	}
 	
+	/*
+	 * Plays TTT with an AI
+	 * 
+	 * @param	TTT = the gameBoard
+	 * @param 	difficulty = difficulty of the AI
+	 * 
+	 */
+	protected void startAI(TTTBoard TTT, int difficulty) {
+		char p1 = chooseSymbol(X, O);
+		char p2 = ' ';
+		if(p1 == X) {
+			p2 = O;
+		}
+		else {
+			p2 = X;
+		}
+		TTTAI ai = new TTTAI(p2);
+		performAIGame(TTT, difficulty, p1, ai);
+		
+		System.out.println("FINAL BOARD");
+		TTT.printGameBoard(TTT.board);
+	}
+	
+	/*
+	 * Plays TTT with an AI
+	 * 
+	 * @param	TTT = the gameBoard
+	 * @param 	difficulty = difficulty of the AI
+	 * @param	p1 = player
+	 * @param	ai = the ai
+	 * 
+	 */
+	protected void performAIGame(TTTBoard TTT, int difficulty, char p1, TTTAI ai) {
+		boolean gameDone = false;
+		
+		//easy AI
+		if(difficulty == 1) {
+			while(gameDone == false) {
+				choiceOfPositioning(TTT, p1);
+				gameDone = TTT.checkGameState(TTT.board, X, O);
+				if(gameDone == true) {
+					break;
+				}
+				ai.easy(TTT, ai.symbol);
+				gameDone = TTT.checkGameState(TTT.board, X, O);
+			}
+		}
+		//medium AI
+		else if(difficulty == 2) {
+			while(gameDone == false) {
+				choiceOfPositioning(TTT, p1);
+				gameDone = TTT.checkGameState(TTT.board, X, O);
+			
+				if(gameDone == true) {
+					break;
+				}
+				
+				ai.medium(TTT, ai.symbol);
+				gameDone = TTT.checkGameState(TTT.board, X, O);
+			}
+		}
+		//hard AI
+		else {
+			while(gameDone == false) {
+				choiceOfPositioning(TTT, p1);
+				gameDone = TTT.checkGameState(TTT.board, X, O);
+			
+				if(gameDone == true) {
+					break;
+				}
+				
+				ai.hard(TTT, ai.symbol);
+				gameDone = TTT.checkGameState(TTT.board, X, O);
+			}
+		}
+	}
+	
+	/*
+	 * Asks the user what symbol they want to be
+	 * 
+	 * @param	x = the character 'x'
+	 * @param 	o = the character 'o'
+	 * 
+	 */
 	protected char chooseSymbol(char x, char o) {
 		@SuppressWarnings("resource")
 		Scanner scan = new Scanner(System.in);
 		
 		System.out.print("What letter do you want to be (X | O)? ");
 		char symbol = scan.next().trim().charAt(0);
+		
 		while(Character.toUpperCase(symbol) != x && Character.toUpperCase(symbol) != o) {
 			System.out.println("Error: Not a valid symbol, try again!");
 			System.out.print("What letter do you want to be? (X | O) ");
 			symbol = scan.next().charAt(0);
 		}
+		
 		symbol = Character.toUpperCase(symbol);
 		System.out.println("You are " + symbol + "!");
 
@@ -59,7 +151,7 @@ public class TTTGame {
 	 * @param 	symbol = the player's symbol
 	 * 
 	 */
-	public void choiceOfPositioning(TTTBoard TTT, char symbol) {
+	protected void choiceOfPositioning(TTTBoard TTT, char symbol) {
 		System.out.println(symbol + "'s turn!");
 		boolean loop = true;
 		while(loop == true) {
@@ -112,7 +204,7 @@ public class TTTGame {
 	 * 
 	 * @return	corrected position
 	 */
-	public int positionCorrection(int position) {
+	protected int positionCorrection(int position) {
 		//If user put 1, turn to 0
 		if(position == firstSpot) {
 			position = position - 1;
@@ -122,6 +214,28 @@ public class TTTGame {
 			position = position + 1;
 		}
 		return position;
+	}
+	
+	/*
+	 * Asks the user where to put their symbol
+	 * 
+	 * @param	gameBoard = the board
+	 * @param 	symbol = the player's symbol
+	 * 
+	 */
+	protected boolean choiceOfPositioning(TTTBoard TTT, char symbol, int row, int col) {
+		System.out.println(symbol + "'s turn!");
+		
+		//if we can successfully insert the symbol
+		if(TTT.board[row][col] == ' ') {
+			TTT.board[row][col] = symbol;
+			TTT.printGameBoard(TTT.board);
+		}
+		else {
+			return false;
+		}
+		
+		return true;
 	}
 	
 }

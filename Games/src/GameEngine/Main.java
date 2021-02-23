@@ -17,6 +17,9 @@ public class Main {
 			System.out.println("Tic-Tac-Toe");
 			TTTBoard.startGame();
 		}
+		if(scanner.nextInt() == 2) {
+			
+		}
 	}
 	
 	private static void listOfGames() {

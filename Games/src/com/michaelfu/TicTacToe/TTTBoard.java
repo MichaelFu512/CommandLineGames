@@ -1,5 +1,7 @@
 package com.michaelfu.TicTacToe;
 
+import java.util.Scanner;
+
 public class TTTBoard {
 	
 	protected char[][] board;
@@ -15,20 +17,79 @@ public class TTTBoard {
 	private static final String oWins = "O wins!";
 	private static final String xWins = "X wins!";
 	
+	/*
+	 * Constructor for TTTBoard
+	 * 
+	 */
 	public TTTBoard() {
 		board = new char[5][5];
 		board = setUp(board);
 	}
 	
+	/*
+	 * Starts the game
+	 * 
+	 */
 	public static void startGame() {
 		TTTBoard TTT = new TTTBoard();
 		TTTGame game = new TTTGame();
-		System.out.println("Welcome to Tic-Tac-Toe");
-		TTT.printGameBoard(TTT.board);
-		game.start(TTT);
+		@SuppressWarnings("resource")
+		Scanner scanner = new Scanner(System.in);
+		
+		System.out.println("Welcome to Tic-Tac-Toe!");
+		int playType = printIntro();
+		if(playType == 1) {
+			System.out.println("What shoud be the difficulty of the AI?");
+			System.out.println("1) Easy " + '\n' + "2) Medium" + '\n' + "3) Hard");
+			int difficulty = scanner.nextInt();
+			while(difficulty > 3 || difficulty < 1) {
+				System.out.println("Invalid difficulty. Please try again");
+				difficulty = scanner.nextInt();
+			}
+			game.startAI(TTT, difficulty);
+		}
+		else {
+			TTT.printGameBoard(TTT.board);
+			game.start2p(TTT);
+		}
+
+		System.out.println("Do you want to play again? (Y/N)");
+		
+		char restart = scanner.next().trim().charAt(0);
+		if(Character.toLowerCase(restart) == 'y') {
+			TTT.setUp(TTT.board);
+			playType = printIntro();
+			TTT.printGameBoard(TTT.board);
+			game.start2p(TTT);
+			System.out.print("Do you want to play again? (Y/N)");
+			restart = scanner.next().trim().charAt(0);
+		}
+		System.out.println("Thank you for playing tic-tac-toe!");
 		
 	}
 	
+	/*
+	 * Prints out the intro for TTT
+	 */
+	private static int printIntro() {
+		System.out.println("How would you like to play Tic-Tac-Toe?");
+		System.out.println("1) Versus AI");
+		System.out.println("2) 2-player");
+		System.out.println("(Press the corresponding number)");
+		@SuppressWarnings("resource")
+		Scanner scanner = new Scanner(System.in);
+		int gamePlay = scanner.nextInt();
+		
+		return gamePlay;
+	}
+	
+	/*
+	 * Sets up the gameboard 
+	 * 
+	 * @param 	board = the TTT board
+	 * 
+	 * @return	the set up TTT board
+	 */
 	private char[][] setUp(char[][] board) {
 		for(int i = 0; i < board.length; i++) {
 			for(int j = 0; j < board[i].length; j++) {
@@ -48,6 +109,11 @@ public class TTTBoard {
 		return board;
 	}
 	
+	/*
+	 * Prints out the board
+	 * 
+	 * @param 	gameBoard = the board
+	 */
 	protected void printGameBoard(char[][] gameBoard) {
 		System.out.println();
 		for(char[] row : gameBoard) {
